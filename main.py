@@ -107,6 +107,7 @@ collection.insert_many(data)
 
 print("✅ Данные успешно загружены в MongoDB")
 
+# Достаем записи отстоящие на 14 дней от текущей даты по времени события и на 30 дней дате регистрации
 archive_data = []
 for doc in collection.find({"user_info.registration_date": {"$lt":datetime.now() - timedelta(days=30)},
                             "event_time":{"$lt":datetime.now() - timedelta(days=14)}}):
@@ -116,6 +117,7 @@ collection = db["archived_users"]
 collection.drop()
 collection.insert_many(archive_data)
 
+#создаем словарь и заполняем его
 d = {}
 d["date"] = datetime.now().strftime('%Y-%m-%d')
 d["archived_users_count"] = 0
@@ -126,7 +128,10 @@ for id_ in collection.distinct("user_id"):
     d["archived_users_count"] += 1
 d["archived_users_ids"] = archived_users_ids
 
+#сохраняем данные в json
 path_ = f"tmp/{datetime.now().strftime('%Y-%m-%d')}.json";
 
 with open(path_, "w") as file:
     json.dump(d, file)
+
+#ссылка на дз в репозитории https://github.com/roman2992/gitroman/tree/mongo-hw
